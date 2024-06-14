@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Análisis de Datos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="../static/styles.css">
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 900px;
+            margin-top: 50px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .card {
+            margin-bottom: 30px;
+        }
+        .icon {
+            color: #007bff;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">Análisis de Datos para {{ filename }}</h1>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-chart-bar icon"></i>Estadísticas Básicas</h2>
+            </div>
+            <div class="card-body">
+                {{ analysis_results['stats'] | safe }}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-exclamation-triangle icon"></i>Datos Atípicos</h2>
+            </div>
+            <div class="card-body">
+                {{ analysis_results['outliers'] | safe }}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-clipboard-list icon"></i>Análisis Adicional</h2>
+            </div>
+            <div class="card-body">
+                <p><strong>Semana con más asistencia:</strong> {{ analysis_results['semana_mas_asistencia'] }}</p>
+                <p><strong>Mes con más asistencia:</strong> {{ analysis_results['mes_mas_asistencia'] }}</p>
+                <p><strong>Mes con menos asistencia:</strong> {{ analysis_results['mes_menos_asistencia'] }}</p>
+                <p><strong>Promedio de asistencia por semana:</strong> {{ analysis_results['promedio_asistencia_semana'] }}</p>
+                <p><strong>Promedio de asistencia por mes:</strong></p>
+                {% if 'promedio_asistencia_mes' in analysis_results %}
+                <ul class="list-group">
+                    {% for mes, promedio in analysis_results['promedio_asistencia_mes'].items() %}
+                        <li class="list-group-item">Mes {{ mes }}: {{ promedio }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>{{ analysis_results['promedio_asistencia_mes_error'] }}</p>
+                {% endif %}
+                <p><strong>Productividad promedio:</strong> {{ analysis_results['productividad'] }}</p>
+                <p><strong>Seguimiento de dieta promedio:</strong> {{ analysis_results['dieta'] }}</p>
+                <p><strong>Variación total en el peso:</strong> {{ analysis_results['variacion_peso'] }}</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-chart-line icon"></i>Desviación Estándar</h2>
+            </div>
+            <div class="card-body">
+                {{ analysis_results['desviacion_estandar'] | safe }}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-chart-area icon"></i>Mediana</h2>
+            </div>
+            <div class="card-body">
+                {{ analysis_results['mediana'] | safe }}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-chart-pie icon"></i>Moda</h2>
+            </div>
+            <div class="card-body">
+                {{ analysis_results['moda'] | safe }}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-chart-scatter icon"></i>Gráfica de Dispersión</h2>
+            </div>
+            <div class="card-body">
+                {% if analysis_results['scatterplot_path'] %}
+                <img src="{{ url_for('static', filename='scatterplot.png') }}" alt="Gráfica de Dispersión" class="img-fluid">
+                {% else %}
+                <p>No hay gráfica de dispersión disponible.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-chart-bar icon"></i>Histogramas</h2>
+            </div>
+            <div class="card-body">
+                {% if analysis_results['histogram_path'] %}
+                <img src="{{ url_for('static', filename='histogram.png') }}" alt="Histograma" class="img-fluid">
+                {% else %}
+                <p>No hay histogramas disponibles.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-chart-area icon"></i>Distribuciones</h2>
+            </div>
+            <div class="card-body">
+                {% if analysis_results['distplot_path'] %}
+                <img src="{{ url_for('static', filename='distplot.png') }}" alt="Distribuciones" class="img-fluid">
+                {% else %}
+                <p>No hay gráficos de distribuciones disponibles.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-chart-line icon"></i>Boxplot</h2>
+            </div>
+            <div class="card-body">
+                {% if analysis_results['boxplot_path'] %}
+                <img src="{{ url_for('static', filename='boxplot.png') }}" alt="Boxplot" class="img-fluid">
+                {% else %}
+                <p>No hay boxplots disponibles.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-chart-line icon"></i>Boxplot</h2>
+            </div>
+            <div class="card-body">
+                {% if analysis_results['boxplot_path'] %}
+                <img src="{{ url_for('static', filename='boxplot.png') }}" alt="Boxplot" class="img-fluid">
+                {% else %}
+                <p>No hay boxplots disponibles.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
